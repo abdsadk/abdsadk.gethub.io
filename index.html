@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Private Personal Hub</title>
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --surface: #10161d;
+      --muted: #1a222c;
+      --text: #e6edf3;
+      --subtext:#9fb0c3;
+      --primary:#60a5fa; /* blue-400 */
+      --primary-2:#3b82f6; /* blue-500 */
+      --accent:#22d3ee;   /* cyan-400 */
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --radius:16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.4);
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5}
+    a{color:var(--primary)}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+
+    /* Header & Nav */
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(to bottom, rgba(11,15,20,.9), rgba(11,15,20,.85));backdrop-filter: blur(6px);border-bottom:1px solid #1f2937}
+    .nav{display:flex;align-items:center;gap:16px;padding:10px 24px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent)}
+    .spacer{flex:1}
+    .nav a,.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:1px solid #243041;background:var(--surface);color:var(--text);text-decoration:none}
+    .btn:hover,.nav a:hover{border-color:#334256}
+    .search{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;border:1px solid #243041;background:var(--surface);}
+    .search input{all:unset;width:220px}
+    .toggle{cursor:pointer}
+
+    /* Mega menu */
+    .menu-wrap{position:relative}
+    .menu-trigger{cursor:pointer}
+    .mega{position:absolute;left:0;top:120%;width:680px;max-width:90vw;background:var(--surface);border:1px solid #243041;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:none}
+    .menu-wrap:focus-within .mega, .menu-wrap:hover .mega{display:block}
+    .mega-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .mega h4{margin:0 0 6px 0;color:var(--subtext);font-weight:600}
+    .item{padding:10px;border:1px solid #243041;border-radius:12px;background:var(--muted)}
+
+    /* Layout */
+    main{padding-top:16px}
+    .grid{display:grid;gap:16px}
+    .two{grid-template-columns:1fr 1fr}
+    .three{grid-template-columns:repeat(3,1fr)}
+    .four{grid-template-columns:repeat(4,1fr)}
+    @media (max-width: 900px){.two,.three,.four{grid-template-columns:1fr}}
+
+    /* Card */
+    .card{background:var(--surface);border:1px solid #243041;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card h3{margin:0;padding:16px 18px;border-bottom:1px solid #243041;font-size:18px}
+    .card .content{padding:16px 18px}
+
+    /* Inputs */
+    input[type="text"], input[type="email"], input[type="date"], textarea, select{
+      width:100%;padding:12px 14px;border-radius:12px;border:1px solid #243041;background:#0d131a;color:var(--text)
+    }
+    textarea{resize:vertical;min-height:120px}
+    .row{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+    @media (max-width:700px){.row{grid-template-columns:1fr}}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #334256;border-radius:999px;padding:6px 10px;font-size:12px;color:var(--subtext)}
+    .btn-solid{background:var(--primary-2);border-color:transparent}
+    .btn-ghost{background:transparent;border-color:#334256}
+
+    /* Gallery */
+    .gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media (max-width:1000px){.gallery{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:600px){.gallery{grid-template-columns:1fr}}
+    .thumb{border:1px solid #243041;border-radius:12px;overflow:hidden;background:#0d131a}
+    .thumb img{width:100%;height:180px;object-fit:cover;display:block}
+    .thumb .meta{display:flex;justify-content:space-between;gap:8px;padding:8px}
+
+    /* Table simple */
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid #243041;padding:10px;text-align:left}
+
+    /* Footer */
+    footer{color:var(--subtext);font-size:12px;padding:30px 24px;text-align:center}
+
+    /* Hide sections */
+    section[hidden]{display:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand"><span class="dot" aria-hidden="true"></span> <span>Private Personal Hub</span></div>
+
+      <div class="menu-wrap" tabindex="0">
+        <span class="nav a menu-trigger">Sections ▾</span>
+        <div class="mega" role="menu" aria-label="Sections">
+          <div class="mega-grid">
+            <div class="item">
+              <h4>Core</h4>
+              <div class="grid">
+                <button class="btn" data-nav="hub">Hub</button>
+                <button class="btn" data-nav="knowledge">Knowledge</button>
+                <button class="btn" data-nav="journey">Journey</button>
+                <button class="btn" data-nav="showcase">Showcase</button>
+                <button class="btn" data-nav="archive">Archive</button>
+              </div>
+            </div>
+            <div class="item">
+              <h4>Quick actions</h4>
+              <div class="grid">
+                <button class="btn" id="quick-today">Go to today</button>
+                <button class="btn" id="quick-export">Export backup</button>
+                <button class="btn" id="quick-import">Import backup</button>
+                <button class="btn" id="quick-dark">Toggle theme</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="search">
+        <input id="search" placeholder="Search... ( / )" />
+      </div>
+      <button class="btn toggle" id="theme">Dark</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HUB -->
+    <section id="hub">
+      <div class="grid two">
+        <div class="card">
+          <h3>Profile</h3>
+          <div class="content grid">
+            <div class="row">
+              <input id="p_name" placeholder="Name" type="text" />
+              <input id="p_email" placeholder="Email" type="email" />
+              <input id="p_phone" placeholder="Phone" type="text" />
+              <input id="p_location" placeholder="Location" type="text" />
+            </div>
+            <textarea id="p_about" placeholder="About you"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Goals</h3>
+          <div class="content">
+            <div class="row">
+              <select id="g_scope">
+                <option value="yearly">Yearly</option>
+                <option value="monthly">Monthly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+              <input id="g_text" placeholder="Add a goal" type="text" />
+            </div>
+            <div class="grid" style="margin-top:8px">
+              <button class="btn btn-solid" id="g_add">Add</button>
+            </div>
+            <div id="goals_lists" class="grid" style="margin-top:14px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KNOWLEDGE -->
+    <section id="knowledge" hidden>
+      <div class="grid two">
+        <div class="card">
+          <h3>Subjects</h3>
+          <div class="content grid">
+            <div class="grid" id="kb_subjects"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 id="kb_title">Notes</h3>
+          <div class="content">
+            <textarea id="kb_notes" placeholder="Write your notes"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOURNEY -->
+    <section id="journey" hidden>
+      <div class="grid">
+        <div class="card">
+          <h3>Daily Log</h3>
+          <div class="content">
+            <div class="row">
+              <input type="date" id="jr_date" />
+              <span class="pill" id="jr_count">0 chars</span>
+            </div>
+            <textarea id="jr_text" placeholder="Write your day"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Habits</h3>
+          <div class="content" id="habits_box" class="grid"></div>
+        </div>
+
+        <div class="card">
+          <h3>Gym Log</h3>
+          <div class="content">
+            <div class="row">
+              <input type="date" id="gym_date" />
+              <input type="text" id="gym_workout" placeholder="Workout" />
+            </div>
+            <input type="text" id="gym_notes" placeholder="Notes" style="margin-top:8px" />
+            <div style="margin-top:8px"><button class="btn btn-solid" id="gym_add">Add</button></div>
+            <div id="gym_list" class="grid" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOWCASE -->
+    <section id="showcase" hidden>
+      <div class="grid">
+        <div class="card">
+          <h3>Gallery</h3>
+          <div class="content">
+            <div class="grid row" style="align-items:center">
+              <label class="btn btn-solid" for="img_input">Upload images</label>
+              <input id="img_input" type="file" accept="image/*" multiple hidden />
+              <div id="drop" class="pill">Drag & Drop here</div>
+            </div>
+            <div id="gallery" class="gallery" style="margin-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Projects</h3>
+          <div class="content">
+            <div class="row">
+              <input id="prj_title" placeholder="Title" />
+              <input id="prj_desc" placeholder="Description" />
+            </div>
+            <div style="margin-top:8px"><button class="btn btn-solid" id="prj_add">Add</button></div>
+            <div id="prj_list" class="grid" style="margin-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Fragrance Catalog</h3>
+          <div class="content">
+            <div class="row">
+              <input id="fg_name" placeholder="Name" />
+              <input id="fg_note" placeholder="Notes" />
+            </div>
+            <div style="margin-top:8px"><button class="btn btn-solid" id="fg_add">Add</button></div>
+            <div id="fg_list" class="grid" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" hidden>
+      <div class="grid two">
+        <div class="card">
+          <h3>Contact</h3>
+          <div class="content grid">
+            <div class="row">
+              <input id="ct_name" placeholder="Your name" />
+              <input id="ct_email" placeholder="Your email" type="email" />
+            </div>
+            <textarea id="ct_msg" placeholder="Message"></textarea>
+            <div class="row">
+              <button class="btn btn-solid" id="ct_save">Save message</button>
+              <button class="btn" id="ct_copy">Copy to clipboard</button>
+            </div>
+            <div id="ct_status" class="pill">No messages yet</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Messages</h3>
+          <div class="content">
+            <table id="ct_table"><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Message</th><th></th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section id="archive" hidden>
+      <div class="grid two">
+        <div class="card">
+          <h3>Backup</h3>
+          <div class="content">
+            <button class="btn btn-solid" id="bk_export">Export JSON</button>
+            <pre id="bk_preview" style="margin-top:12px;white-space:pre-wrap;background:#0d131a;padding:12px;border-radius:12px;max-height:300px;overflow:auto"></pre>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Import / Reset</h3>
+          <div class="content">
+            <textarea id="bk_input" placeholder="Paste backup JSON here"></textarea>
+            <div class="row" style="margin-top:8px">
+              <button class="btn btn-solid" id="bk_import">Import</button>
+              <button class="btn" id="bk_clear">Clear all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Built for you. 100 percent local. Use Archive to back up your data.
+  </footer>
+
+<script>
+(function(){
+  const NS = 'ppsh_v1_';
+  const $ = (sel,root=document)=>root.querySelector(sel);
+  const $$ = (sel,root=document)=>Array.from(root.querySelectorAll(sel));
+  const today = ()=> new Date().toISOString().slice(0,10);
+
+  // Navigation
+  const sections = ['hub','knowledge','journey','showcase','contact','archive'];
+  function show(id){
+    sections.forEach(s=>{
+      const el = $('#'+s);
+      if(!el) return; el.hidden = s!==id;
+    });
+    localStorage.setItem(NS+'tab', id);
+  }
+  $$('.btn[data-nav]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.nav)));
+  const initTab = localStorage.getItem(NS+'tab') || 'hub';
+  show(initTab);
+
+  // Theme
+  const themeBtn = $('#theme');
+  function setTheme(t){document.documentElement.dataset.theme=t; themeBtn.textContent = t==='dark'?'Dark':'Light'}
+  const storedTheme = localStorage.getItem(NS+'theme')||'dark';
+  setTheme(storedTheme);
+  themeBtn.addEventListener('click',()=>{const t = document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem(NS+'theme',t);setTheme(t)});
+
+  // Quick actions
+  $('#quick-today').addEventListener('click',()=>{show('journey'); $('#jr_date').value=today(); $('#jr_text').focus();});
+  $('#quick-export').addEventListener('click',()=>exportBackup(true));
+  $('#quick-import').addEventListener('click',()=>{show('archive'); $('#bk_input').focus()});
+  $('#quick-dark').addEventListener('click',()=>themeBtn.click());
+
+  // Search focus shortcut
+  const search = $('#search');
+  window.addEventListener('keydown',e=>{ if(e.key==='/' && document.activeElement!==search){ e.preventDefault(); search.focus(); } });
+
+  // HUB
+  const profileFields=['name','email','phone','location','about'];
+  const profile = Object.fromEntries(profileFields.map(k=>[k, localStorage.getItem(NS+'p_'+k)||'' ]));
+  $('#p_name').value=profile.name; $('#p_email').value=profile.email; $('#p_phone').value=profile.phone; $('#p_location').value=profile.location; $('#p_about').value=profile.about;
+  $('#p_name').addEventListener('input',e=>localStorage.setItem(NS+'p_name', e.target.value));
+  $('#p_email').addEventListener('input',e=>localStorage.setItem(NS+'p_email', e.target.value));
+  $('#p_phone').addEventListener('input',e=>localStorage.setItem(NS+'p_phone', e.target.value));
+  $('#p_location').addEventListener('input',e=>localStorage.setItem(NS+'p_location', e.target.value));
+  $('#p_about').addEventListener('input',e=>localStorage.setItem(NS+'p_about', e.target.value));
+
+  const goals = JSON.parse(localStorage.getItem(NS+'goals')||'{"yearly":[],"monthly":[],"weekly":[]}');
+  const gScope=$('#g_scope'), gText=$('#g_text'), gAdd=$('#g_add'), gLists=$('#goals_lists');
+  function saveGoals(){ localStorage.setItem(NS+'goals', JSON.stringify(goals)); renderGoals(); }
+  gAdd.addEventListener('click',()=>{ const s=gScope.value, t=gText.value.trim(); if(!t) return; goals[s].push({id:crypto.randomUUID(), text:t, done:false}); gText.value=''; saveGoals(); });
+  function renderGoals(){
+    gLists.innerHTML='';
+    ['yearly','monthly','weekly'].forEach(scope=>{
+      const box=document.createElement('div');
+      const done = goals[scope].filter(g=>g.done).length;
+      box.innerHTML=`<div class="pill" style="margin:4px 0">${scope.toUpperCase()} ${done}/${goals[scope].length}</div>`;
+      goals[scope].forEach(item=>{
+        const row=document.createElement('div');
+        row.className='row';
+        row.innerHTML=`<label style="display:flex;align-items:center;gap:10px"><input type="checkbox" ${item.done?'checked':''}/> <span ${item.done?'style="text-decoration:line-through;opacity:.6"':''}>${item.text}</span></label>
+        <button class="btn" data-rm="${item.id}">Remove</button>`;
+        const cb=row.querySelector('input'); cb.addEventListener('change',()=>{ item.done=!item.done; saveGoals(); });
+        row.querySelector('[data-rm]').addEventListener('click',()=>{ const i=goals[scope].findIndex(x=>x.id===item.id); if(i>-1){ goals[scope].splice(i,1); saveGoals(); } });
+        box.appendChild(row);
+      });
+      gLists.appendChild(box);
+    });
+  }
+  renderGoals();
+
+  // KNOWLEDGE
+  const subjects=["Statistics","Accounting","Macroeconomics","Finance","Management","Digital Skills","Languages"];
+  const kbSubjects=$('#kb_subjects');
+  const kbNotes=$('#kb_notes');
+  const kbTitle=$('#kb_title');
+  const activeSub = localStorage.getItem(NS+'kb_active')||subjects[0];
+  function renderSubjects(){
+    kbSubjects.innerHTML='';
+    subjects.forEach(s=>{
+      const b=document.createElement('button');
+      b.className='btn'; if(s===localStorage.getItem(NS+'kb_active')) b.classList.add('btn-solid');
+      b.textContent=s; b.addEventListener('click',()=>{ localStorage.setItem(NS+'kb_active', s); renderSubjects(); loadNotes(); });
+      kbSubjects.appendChild(b);
+    })
+  }
+  function loadNotes(){
+    const sub=localStorage.getItem(NS+'kb_active')||subjects[0];
+    kbTitle.textContent='Notes – '+sub;
+    kbNotes.value = localStorage.getItem(NS+'kb_'+sub)||'';
+  }
+  kbNotes.addEventListener('input',()=>{
+    const sub=localStorage.getItem(NS+'kb_active')||subjects[0];
+    localStorage.setItem(NS+'kb_'+sub, kbNotes.value);
+  });
+  localStorage.setItem(NS+'kb_active', activeSub);
+  renderSubjects(); loadNotes();
+
+  // JOURNEY
+  const jrDate=$('#jr_date'), jrText=$('#jr_text'), jrCount=$('#jr_count');
+  jrDate.value = localStorage.getItem(NS+'jr_last') || today();
+  function loadJournal(){ const d=jrDate.value; jrText.value = localStorage.getItem(NS+'jr_'+d)||''; jrCount.textContent = (jrText.value.length||0) + ' chars'; localStorage.setItem(NS+'jr_last', d); }
+  jrDate.addEventListener('change', loadJournal);
+  jrText.addEventListener('input',()=>{ localStorage.setItem(NS+'jr_'+jrDate.value, jrText.value); jrCount.textContent = jrText.value.length+ ' chars'; });
+  loadJournal();
+
+  const defaultHabits=[
+    {id:'study', name:'Study'},
+    {id:'gym', name:'Gym'},
+    {id:'sleep_7h', name:'Sleep 7h'},
+    {id:'no_phone', name:'No phone at night'}
+  ];
+  const habitsBox=$('#habits_box');
+  function renderHabits(){
+    habitsBox.innerHTML='';
+    defaultHabits.forEach(h=>{
+      const key = NS+'hb_'+jrDate.value+'_'+h.id;
+      const done = localStorage.getItem(key)==='1';
+      const btn=document.createElement('button');
+      btn.className='btn'; if(done) btn.classList.add('btn-solid');
+      btn.textContent = h.name + (done?' ✓':'');
+      btn.addEventListener('click',()=>{ const nd=! (localStorage.getItem(key)==='1'); localStorage.setItem(key, nd?'1':'0'); renderHabits(); });
+      habitsBox.appendChild(btn);
+    })
+  }
+  jrDate.addEventListener('change', renderHabits); renderHabits();
+
+  // GYM
+  const gymDate=$('#gym_date'), gymWorkout=$('#gym_workout'), gymNotes=$('#gym_notes'), gymAdd=$('#gym_add'), gymList=$('#gym_list');
+  gymDate.value=today();
+  const gymEntries = JSON.parse(localStorage.getItem(NS+'gym')||'[]');
+  function saveGym(){ localStorage.setItem(NS+'gym', JSON.stringify(gymEntries)); renderGym(); }
+  gymAdd.addEventListener('click',()=>{ const it={id:crypto.randomUUID(), date:gymDate.value, workout:gymWorkout.value.trim(), notes:gymNotes.value.trim()}; if(!it.workout) return; gymEntries.unshift(it); gymWorkout.value=''; gymNotes.value=''; saveGym(); });
+  function renderGym(){
+    gymList.innerHTML='';
+    if(!gymEntries.length){ gymList.innerHTML='<div class="pill">No entries yet</div>'; return; }
+    gymEntries.forEach(e=>{
+      const row=document.createElement('div'); row.className='row';
+      row.innerHTML=`<div class="pill">${e.date}</div><div class="pill">${e.workout}</div><button class="btn" data-rm="${e.id}">Remove</button>`;
+      row.appendChild(document.createElement('div')).textContent=e.notes||'';
+      row.querySelector('[data-rm]').addEventListener('click',()=>{ const i=gymEntries.findIndex(x=>x.id===e.id); if(i>-1){ gymEntries.splice(i,1); saveGym(); } });
+      gymList.appendChild(row);
+    });
+  }
+  renderGym();
+
+  // SHOWCASE: images
+  const gal=$('#gallery'); const input=$('#img_input'); const drop=$('#drop');
+  const images = JSON.parse(localStorage.getItem(NS+'images')||'[]');
+  function saveImages(){ localStorage.setItem(NS+'images', JSON.stringify(images)); renderGallery(); }
+  function renderGallery(){
+    gal.innerHTML='';
+    if(!images.length){ gal.innerHTML='<div class="pill">No images yet</div>'; return; }
+    images.forEach(img=>{
+      const card=document.createElement('div'); card.className='thumb';
+      card.innerHTML=`<img src="${img.data}" alt="${img.caption}"><div class="meta"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${img.caption}</span><button class="btn" data-rm="${img.id}">Remove</button></div>`;
+      card.querySelector('[data-rm]').addEventListener('click',()=>{ const i=images.findIndex(x=>x.id===img.id); if(i>-1){ images.splice(i,1); saveImages(); } });
+      gal.appendChild(card);
+    });
+  }
+  renderGallery();
+  input.addEventListener('change', async e=>{ await handleFiles(e.target.files); input.value=''; });
+  ;['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.border='2px dashed var(--accent)'}));
+  ;['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.border='1px solid #334256'}));
+  drop.addEventListener('drop', async e=>{ await handleFiles(e.dataTransfer.files); });
+  async function handleFiles(fileList){
+    const files=[...fileList];
+    for(const f of files){ if(!f.type.startsWith('image/')) continue; const data = await fileToDataURL(f); images.unshift({id:crypto.randomUUID(), data, caption:f.name}); }
+    saveImages();
+  }
+  function fileToDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
+
+  // SHOWCASE: projects & fragrances
+  const prjList=$('#prj_list'); const prjAdd=$('#prj_add'); const prjTitle=$('#prj_title'); const prjDesc=$('#prj_desc');
+  const projects = JSON.parse(localStorage.getItem(NS+'projects')||'[]');
+  function saveProjects(){ localStorage.setItem(NS+'projects', JSON.stringify(projects)); renderProjects(); }
+  prjAdd.addEventListener('click',()=>{ const t=prjTitle.value.trim(); if(!t) return; const d=prjDesc.value.trim(); projects.unshift({id:crypto.randomUUID(), title:t, desc:d}); prjTitle.value=''; prjDesc.value=''; saveProjects(); });
+  function renderProjects(){ prjList.innerHTML=''; if(!projects.length){ prjList.innerHTML='<div class="pill">No projects yet</div>'; return; } projects.forEach(p=>{ const row=document.createElement('div'); row.className='row'; row.innerHTML=`<div class="pill">${p.title}</div><div>${p.desc||''}</div><button class="btn" data-rm="${p.id}">Remove</button>`; row.querySelector('[data-rm]').addEventListener('click',()=>{ const i=projects.findIndex(x=>x.id===p.id); if(i>-1){ projects.splice(i,1); saveProjects(); } }); prjList.appendChild(row); }); }
+  renderProjects();
+
+  const fgList=$('#fg_list'); const fgAdd=$('#fg_add'); const fgName=$('#fg_name'); const fgNote=$('#fg_note');
+  const frags = JSON.parse(localStorage.getItem(NS+'frags')||'[]');
+  function saveFrags(){ localStorage.setItem(NS+'frags', JSON.stringify(frags)); renderFrags(); }
+  fgAdd.addEventListener('click',()=>{ const n=fgName.value.trim(); if(!n) return; const t=fgNote.value.trim(); frags.unshift({id:crypto.randomUUID(), name:n, note:t}); fgName.value=''; fgNote.value=''; saveFrags(); });
+  function renderFrags(){ fgList.innerHTML=''; if(!frags.length){ fgList.innerHTML='<div class="pill">No fragrances yet</div>'; return; } frags.forEach(f=>{ const row=document.createElement('div'); row.className='row'; row.innerHTML=`<div class="pill">${f.name}</div><div>${f.note||''}</div><button class="btn" data-rm="${f.id}">Remove</button>`; row.querySelector('[data-rm]').addEventListener('click',()=>{ const i=frags.findIndex(x=>x.id===f.id); if(i>-1){ frags.splice(i,1); saveFrags(); } }); fgList.appendChild(row); }); }
+  renderFrags();
+
+  // CONTACT
+  const ctName=$('#ct_name'), ctEmail=$('#ct_email'), ctMsg=$('#ct_msg'), ctSave=$('#ct_save'), ctCopy=$('#ct_copy'), ctTable=$('#ct_table tbody'), ctStatus=$('#ct_status');
+  const messages = JSON.parse(localStorage.getItem(NS+'messages')||'[]');
+  function renderMsgs(){ ctTable.innerHTML=''; if(!messages.length){ ctStatus.textContent='No messages yet'; return; } ctStatus.textContent=messages.length+' saved'; messages.forEach(m=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${m.date}</td><td>${m.name}</td><td>${m.email}</td><td>${m.msg}</td><td><button class="btn" data-rm="${m.id}">Remove</button></td>`; tr.querySelector('[data-rm]').addEventListener('click',()=>{ const i=messages.findIndex(x=>x.id===m.id); if(i>-1){ messages.splice(i,1); saveMsgs(); } }); ctTable.appendChild(tr); }); }
+  function saveMsgs(){ localStorage.setItem(NS+'messages', JSON.stringify(messages)); renderMsgs(); }
+  ctSave.addEventListener('click',()=>{ const it={id:crypto.randomUUID(), date:new Date().toLocaleString(), name:ctName.value.trim(), email:ctEmail.value.trim(), msg:ctMsg.value.trim()}; if(!it.msg) return; messages.unshift(it); ctName.value=''; ctEmail.value=''; ctMsg.value=''; saveMsgs(); });
+  ctCopy.addEventListener('click',()=>{ const txt = `From: ${ctName.value}\nEmail: ${ctEmail.value}\n\n${ctMsg.value}`; navigator.clipboard.writeText(txt).then(()=>{ ctStatus.textContent='Copied'; setTimeout(()=>ctStatus.textContent=messages.length+' saved',1500); }); });
+  renderMsgs();
+
+  // ARCHIVE
+  const bkPreview=$('#bk_preview'), bkExport=$('#bk_export'), bkInput=$('#bk_input'), bkImport=$('#bk_import'), bkClear=$('#bk_clear');
+  function buildBackup(){ const obj={}; Object.keys(localStorage).filter(k=>k.startsWith(NS)).forEach(k=>obj[k]=JSON.parse(localStorage.getItem(k))); return obj; }
+  function exportBackup(showArchive){ const data = JSON.stringify(buildBackup(), null, 2); if(showArchive){ show('archive'); } bkPreview.textContent=data; const blob=new Blob([data],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='private-site-backup-'+today()+'.json'; a.click(); URL.revokeObjectURL(url); }
+  bkExport.addEventListener('click',()=>exportBackup(false));
+  bkImport.addEventListener('click',()=>{ try{ const data=JSON.parse(bkInput.value); Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,JSON.stringify(v))); alert('Import complete. Reload the page.'); }catch(e){ alert('Invalid JSON'); } });
+  bkClear.addEventListener('click',()=>{ if(!confirm('Remove all personal data from this browser')) return; Object.keys(localStorage).filter(k=>k.startsWith(NS)).forEach(k=>localStorage.removeItem(k)); alert('Cleared. Reload the page.'); });
+
+})();
+</script>
+</body>
+</html>
